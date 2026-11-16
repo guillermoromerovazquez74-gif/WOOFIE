@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Woofie | Identificación</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f5f3ef;
+  text-align: center;
+  padding: 25px;
+  color: #333;
+}
+
+.contenedor {
+  background: white;
+  max-width: 400px;
+  margin: auto;
+  padding: 25px;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px #0002;
+}
+
+img {
+  width: 130px;
+  height: 130px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+button {
+  background: #76a99b;
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 10px;
+  width: 100%;
+  margin-top: 15px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+#resultado {
+  margin-top: 15px;
+  overflow-wrap: anywhere;
+}
+</style>
+</head>
+
+<body>
+
+<div class="contenedor">
+
+<h1>🐾 Woofie</h1>
+<p>¡Hola! ¿Encontraste a este perrito?</p>
+
+<img src="https://placehold.co/300x300?text=Foto+del+perro"
+alt="Fotografía del perro">
+
+<h2>Max</h2>
+<p><b>Raza:</b> Labrador</p>
+<p><b>Color:</b> Café</p>
+<p><b>Edad:</b> 3 años</p>
+
+<hr>
+
+<h3>¿Encontraste a Max?</h3>
+<p>Comparte tu ubicación para ayudar a reunirlo con su familia.</p>
+
+<button onclick="obtenerUbicacion()">
+Reportar ubicación
+</button>
+
+<div id="resultado"></div>
+
+</div>
+
+<script>
+
+function obtenerUbicacion() {
+
+  const resultado = document.getElementById("resultado");
+
+  resultado.innerHTML = "📍 Buscando ubicación...";
+
+  if (!navigator.geolocation) {
+    resultado.innerHTML =
+      "Tu navegador no admite geolocalización.";
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+
+    function(position) {
+
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
+      const precision = position.coords.accuracy;
+
+      const mapa =
+        `https://www.google.com/maps?q=${lat},${lon}`;
+
+      resultado.innerHTML = `
+        <h3>¡Ubicación obtenida!</h3>
+
+        <p><b>Latitud:</b> ${lat}</p>
+        <p><b>Longitud:</b> ${lon}</p>
+        <p><b>Precisión:</b> ${Math.round(precision)} metros</p>
+
+        <a href="${mapa}" target="_blank">
+          Ver ubicación en Google Maps
+        </a>
+      `;
+    },
+
+    function(error) {
+
+      let mensaje = "";
+
+      switch(error.code) {
+
+        case 1:
+          mensaje = "Permiso de ubicación denegado.";
+          break;
+
+        case 2:
+          mensaje = "No se pudo detectar la ubicación.";
+          break;
+
+        case 3:
+          mensaje = "Tiempo de espera agotado.";
+          break;
+
+        default:
+          mensaje = "Error: " + error.message;
+      }
+
+      resultado.innerHTML = `
+        <h3>No se pudo obtener la ubicación</h3>
+        <p>${mensaje}</p>
+        <p>Código de error: ${error.code}</p>
+      `;
+    },
+
+    {
+      enableHighAccuracy: false,
+      timeout: 60000,
+      maximumAge: 0
+    }
+
+  );
+}
+</script>
+
+</body>
+</html>
